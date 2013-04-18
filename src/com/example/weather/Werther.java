@@ -11,10 +11,12 @@ import com.example.jsonTools.JsonTools;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +48,7 @@ public class Werther extends Activity {
 	private TextView index_uv;
 	private TextView index_xc;
 	private TextView index_tr;
+	private AlertDialog dialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -82,16 +85,31 @@ public class Werther extends Activity {
 		views.add(view2);
 		// 构建适配器实现侧滑效果
 		viewPager.setAdapter(new MyAdapter());
-		
+		// 创建对话框Dialog
+		dialog();
+
 		cx_but = (Button) view1.findViewById(R.id.cx_but);
 		cx_but.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				
-				new AlertDialog.Builder(Werther.this).setTitle("请输入城市名")
-				.setView(editCity).setPositiveButton("确定", new OnClickListener() {
-					
+				// 显示对话框
+				dialog.show();
+
+			}
+		});
+
+	}
+
+	/**
+	 * 创建对话框Dialog的方法
+	 */
+	private void dialog() {
+		AlertDialog.Builder dBuilder = new AlertDialog.Builder(Werther.this);
+		dBuilder.setTitle("请输入城市").setIcon(android.R.drawable.ic_dialog_info)
+				.setView(editCity)
+				.setPositiveButton("确定", new OnClickListener() {
+
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						String cityName = "";
@@ -106,27 +124,29 @@ public class Werther extends Activity {
 						JsonTools jsonTools = new JsonTools();
 						try {
 							// 获取JSON数据
-							jsonString = new String(jsonTools.readInputStream(jsonTools
-									.getInputStream(phah)), "utf-8");
+							jsonString = new String(jsonTools
+									.readInputStream(jsonTools
+											.getInputStream(phah)), "utf-8");
 							myData = new ArrayList<String>();
 							// 解析JSON数据保存在list集合中
 							myData = jsonTools.readJson(jsonString);
 							weather.setText(myData.get(10));
 							wind.setText(myData.get(16));
-							dateTime.setText(myData.get(1)+" / "+myData.get(2));
-							temp.setText(myData.get(3)+"°");
+							dateTime.setText(myData.get(1) + " / "
+									+ myData.get(2));
+							temp.setText(myData.get(3) + "°");
 							city.setText(myData.get(0));
 							city1.setText(myData.get(0));
 							weather1.setText(myData.get(10));
 							wind1.setText(myData.get(16));
-							index.setText("穿衣指数："+myData.get(22));
-							index_co.setText("舒适度："+myData.get(26));
-							index_ls.setText("晾晒指数："+myData.get(28));
-							index_cl.setText("晨练："+myData.get(27));
-							index_ag.setText("过敏："+myData.get(29));
-							index_uv.setText("紫外线："+myData.get(23));
-							index_xc.setText("洗车："+myData.get(24));
-							index_tr.setText("旅游："+myData.get(25));
+							index.setText("穿衣指数：" + myData.get(22));
+							index_co.setText("舒适度：" + myData.get(26));
+							index_ls.setText("晾晒指数：" + myData.get(28));
+							index_cl.setText("晨练：" + myData.get(27));
+							index_ag.setText("过敏：" + myData.get(29));
+							index_uv.setText("紫外线：" + myData.get(23));
+							index_xc.setText("洗车：" + myData.get(24));
+							index_tr.setText("旅游：" + myData.get(25));
 						} catch (UnsupportedEncodingException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -134,15 +154,10 @@ public class Werther extends Activity {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-		
-				
-						
-					}
-				})
-				.setNegativeButton("取消", null).show();
 
-			}
-		});
+					}
+				}).setNegativeButton("取消", null);
+		dialog = dBuilder.create();
 
 	}
 
